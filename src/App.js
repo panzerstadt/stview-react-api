@@ -58,6 +58,7 @@ class App extends Component {
       }, 0);
     }
 
+    // defining a query allow the page to accept 'GET' requests
     const StreetViewPageCompoent = query => {
       return (
         <StreetViewPage

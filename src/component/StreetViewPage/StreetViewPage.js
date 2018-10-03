@@ -21,10 +21,55 @@ export default class StreetViewPage extends Component {
     container.innerHTML = "";
   }
 
+  // the street view is too big dammit
+  // https://stackoverflow.com/questions/37135417/download-canvas-as-png-in-fabric-js-giving-network-error
+  dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(","),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  }
+
   GetStreetView(lat, lng) {
     let location = [lat, lng];
     let canvas = document.createElement("canvas");
+
+    // make that sweet click to download layer
+    let clickable = document.createElement("a");
+    clickable.style.position = "fixed";
+    clickable.style.top = 0;
+    clickable.style.height = "100vh";
+    clickable.style.width = "100vw";
+    clickable.style.zIndex = "100";
+    clickable.style.textAlign = "center";
+    clickable.style.verticalAlign = "center";
+    //clickable.innerHTML = "click to download";
+
     let container = document.getElementById("container");
+
+    // make it downloadable when clicked
+    clickable.addEventListener(
+      "click",
+      event => {
+        let lat_out = lat.toString().replace(".", "_");
+        let lng_out = lng.toString().replace(".", "_");
+        // multiplier settings: 0.5 for retina screens dammit
+        // normal ones are 1
+        let imgData = canvas.toDataURL({ format: "png", multiplier: 1 });
+        //let strDataURI = imgData.substr(22, imgData.length); // dunno what dis for
+        let blob = this.dataURLtoBlob(imgData);
+        var objurl = URL.createObjectURL(blob);
+
+        clickable.href = objurl;
+        clickable.download = `streetview-at-${lat_out}-${lng_out}.png`;
+      },
+      false
+    );
 
     console.log("location to find: ", location);
     //var location = locations[idx++];
@@ -50,6 +95,7 @@ export default class StreetViewPage extends Component {
       },
       function(err, result) {
         container.appendChild(canvas);
+        container.appendChild(clickable);
         if (err) {
           console.log("equirect function error: ", err);
           // var obj = document.getElementById("error");
@@ -59,7 +105,8 @@ export default class StreetViewPage extends Component {
           equirect(result.id, {
             tiles: result.tiles,
             canvas: canvas,
-            zoom: zoom
+            zoom: zoom,
+            crossOrigin: "anonymous"
           })
             .on("complete", function(image, info) {
               console.log("Ready", info);
