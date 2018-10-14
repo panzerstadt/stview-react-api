@@ -48,7 +48,7 @@ class App extends Component {
 
   render() {
     const google_maps =
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyAX6_9JCRf0C75DMXVsjOZb2l04qKvd2qU";
+      "https://maps.googleapis.com/maps/api/js?key=AIzaSyCXTG9o-gaJ5MfpqKjjGh3kBTCcfHCrP6A";
 
     var self = this;
     if (self.state.scriptload === "start") {

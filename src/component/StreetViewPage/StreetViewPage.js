@@ -111,6 +111,8 @@ export default class StreetViewPage extends Component {
             .on("complete", function(image, info) {
               console.log("Ready", info);
               console.log("at location", location);
+              // when complete is emitted, run the click function. XD
+              //clickable.click();
             })
             .on("progress", function(ev) {
               console.log(ev.count / ev.total);
